@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>DAD GBS</title>
+
+<link href="css/bootstrap.min.css" rel="stylesheet">
+
+<script src="js/bootstrap.bundle.min.js"></script>
+
+<script src="js/alpine.min.js" defer></script>
+
+
+
+<script type="text/javascript">
+		function addHeader() {
+			fetch("./cgdaHeader.html")
+				.then(response => {
+					return response.text()
+				})
+				.then(data => {
+					//console.log(data);
+					document.querySelector("header").innerHTML = data;
+				});
+		}
+
+
+		async function getGuestHouseList() {
+			const response = await fetch("/listOfGuestHouses");
+			const guestHouses = await response.json();
+			return guestHouses;
+		}
+
+	</script>
+</head>
+
+<body onload="addHeader()">
+
+	<header></header>
+
+	<div x-data="{guestHouses:[]}"
+		x-init="guestHouses = await getGuestHouseList()">
+		<!--
+		<template x-for="author in authors">
+			<p x-text="author.firstName"></p>
+		</template>
+	</div>
+	-->
+		<h1 align="center">Guest Houses Booking Status</h1>
+
+		<form class="w-50" style="margin-left: 1in">
+
+
+			<table class="table">
+				<thead>
+					<tr>
+						<th>Sl No</th>
+						<th>Office Name</th>
+						<th>Guest House Name</th>
+						<th>Room Type</th>
+						<th>Total Rooms</th>
+						<th>Booked Rooms</th>
+					</tr>
+				</thead>
+
+				<tbody>
+					<template x-for="(guestHouse, index) in guestHouses">
+
+						<tr>
+							<td x-text="index+1"></td>
+							<td x-text="guestHouse.officeName"></td>
+							<td x-text="guestHouse.name"></td>
+							<td x-text="guestHouse.roomType"></td>
+							<td x-text="guestHouse.roomsTotal"></td>
+							<td x-text="guestHouse.roomsBooked"></td>
+
+						</tr>
+					</template>
+				</tbody>
+			</table>
+
+
+
+		</form>
+
+	</div>
+
+
+</body>
+
+</html>

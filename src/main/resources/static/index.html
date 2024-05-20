@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>DAD GBS</title>
+
+<link href="css/bootstrap.min.css" rel="stylesheet">
+<script src="js/bootstrap.bundle.min.js"></script>
+<script src="js/alpine.min.js" defer></script>
+
+<script type="text/javascript">
+
+
+		function addHeader() {
+			fetch("./header.html")
+				.then(response => {
+					return response.text()
+				})
+				.then(data => {
+					console.log(data);
+					document.querySelector("header").innerHTML = data;
+				});
+		}
+
+	</script>
+
+</head>
+
+
+
+
+
+
+
+
+<body onload="addHeader()">
+	<header></header>
+	<div class="text-center">
+		<br />
+	</div>
+	<form class="w-50" style="margin-left: 1in" x-data="contactForm()"
+		@submit.prevent="submitForm">
+		<h1>Login</h1>
+
+
+		<div class=" form-floating mb-2">
+			<input type="text" class="form-control" id="userName"
+				placeholder="User Name" x-model="formData.userName"> <label
+				for="floatingInput">User Name</label>
+		</div>
+
+
+		<div class="form-floating">
+			<input type="password" class="form-control" id="password"
+				placeholder="Password" x-model="formData.password"> <label
+				for="floatingInput">Password</label>
+		</div>
+
+		<button class="btn btn-primary mt-3">Submit</button>
+		<div x-text="formMessage"></div>
+
+	</form>
+</body>
+<script>
+	const FORM_URL = "http://localhost:8080/users";
+
+
+
+	function contactForm() {
+		//alert("Contact form");
+		return {
+			formData: {
+				firstName: "",
+				lastName: "",
+			},
+			formMessage: "",
+			formLoading: false,
+			buttonText: "Submit",
+
+			submitForm() {
+				//alert("Submit form");
+
+				//console.log(formData);
+				this.formMessage = "";
+				this.formLoading = false;
+				this.buttonText = "Submitting...";
+				fetch(FORM_URL, {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+						Accept: "application/json",
+					},
+					body: JSON.stringify(this.formData),
+				})
+					.then(response => {
+						if (!response.ok) {
+							throw new Error('Network response was not ok');
+						}
+						return response.json();
+					}).then(data => {
+						// Use the resolved JSON data
+						console.log(data);
+						console.log(data.id);
+						if (data.role == "CGDA") {
+							localStorage.setItem("role", data.role);
+							window.location.href = 'cgda.html';
+
+						} if (data.role == "CDA") {
+							window.location.href = 'cda.html';
+						localStorage.setItem("id", data.office.id);
+						localStorage.setItem("office", data.office.name);
+						console.log(localStorage.getItem("id"));
+
+						} if (data.role == "USER") {
+							window.location.href = 'user.html';
+							localStorage.setItem("userName", data.name);
+							localStorage.setItem("userId", data.id);
+							} 
+					})
+					.catch(() => {
+						this.formMessage = "Something went wrong.";
+						//alert("Problem");
+					})
+					.finally(() => {
+						this.formLoading = false;
+						//alert("Finally");
+						this.buttonText = "Submit";
+					});
+			},
+		};
+	}
+
+</script>
+
+
+</html>

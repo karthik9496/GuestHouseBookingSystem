@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>DAD GBS</title>
+
+<link href="css/bootstrap.min.css" rel="stylesheet">
+
+<script src="js/bootstrap.bundle.min.js"></script>
+
+<script src="js/alpine.min.js" defer></script>
+
+
+
+<script type="text/javascript">
+		function addHeader() {
+			fetch("./header1.html")
+				.then(response => {
+					return response.text()
+				})
+				.then(data => {
+					//console.log(data);
+					document.querySelector("header").innerHTML = data;
+				});
+		}
+
+
+		async function getUserBookingRequests() {
+			const response = await fetch("bookings/user/" + localStorage.getItem("userId") );
+			const bookingRequests = await response.json();
+			return bookingRequests;
+		}
+
+	</script>
+</head>
+
+<body onload="addHeader()">
+
+	<header></header>
+
+	<div x-data="{bookingRequests:[]}"
+		x-init="bookingRequests = await getUserBookingRequests()">
+
+		<h1 align="center" id="userName">Booking Requests Of</h1>
+
+		<script>
+        // Retrieve the value from Local Storage
+        var storedValue = localStorage.getItem('userName');
+
+        // Get the existing content of the h1 tag
+        var existingContent = document.getElementById('userName').textContent;
+
+        // Append the retrieved value to the existing content
+        var newValue = existingContent + ' ' + storedValue;
+
+        // Set the new value as the text content of the h1 tag
+        document.getElementById('userName').textContent = newValue;
+    </script>
+
+
+
+		<form class="w-50" style="margin-left: 1in">
+
+
+			<table class="table">
+				<thead>
+					<tr>
+						<th>Sl No</th>
+						<th>Guest House</th>
+						<th>Room Type</th>
+						<th>Rooms Requested</th>
+						<th>Request Status</th>
+					</tr>
+				</thead>
+
+				<tbody>
+					<template x-for="(bookingRequest, index) in bookingRequests">
+
+						<tr>
+							<td x-text="index+1"></td>
+							<td x-text="bookingRequest.guestHouseName"></td>
+							<td x-text="bookingRequest.roomType"></td>
+
+							<td x-text="bookingRequest.roomsBooked"></td>
+
+							<td x-text="bookingRequest.status"></td>
+						</tr>
+					</template>
+				</tbody>
+			</table>
+
+
+
+		</form>
+
+	</div>
+
+
+</body>
+
+</html>

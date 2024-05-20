@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<link href="css/bootstrap.min.css" rel="stylesheet">
+<script src="js/bootstrap.bundle.min.js"></script>
+<script src="js/alpine.min.js" defer></script>
+<script type="text/javascript">
+		function addHeader() {
+			fetch("./header1.html")
+				.then(response => {
+					return response.text()
+				})
+				.then(data => {
+					//console.log(data);
+					document.querySelector("header").innerHTML = data;
+				});
+		}
+		async function getGuestHouseList() {
+			const response = await fetch("listOfGuestHouses");
+			const guestHouses = await response.json();
+			return guestHouses;
+		}
+	</script>
+
+</head>
+
+<body onload="addHeader()">
+	<header></header>
+
+
+	<form class="w-50" style="margin-left: 1in" x-data="contactForm()"
+		@submit.prevent="submitForm">
+		<h1>Create Booking Request</h1>
+
+		<div x-data="{guestHouses:[]}"
+			x-init="guestHouses = await getGuestHouseList()">
+
+
+			<select class="form-select" x-model="formData.guestHouseId">
+				<option value="">Choose GuestHouse-Room Type</option>
+				<template x-for="guestHouse in guestHouses" :key="guestHouse.id">
+					<option x-text="guestHouse.name + ' (Room Type: '+ guestHouse.roomType + ')'"
+						:value="guestHouse.id"></option>
+				</template>
+			</select>
+			</div>
+		<br>
+		<div class="form-floating">
+			<input type="number" class="form-control" id="days"
+				placeholder="No Of Days" x-model="formData.roomsRequested"> <label>No
+				Of Rooms</label>
+		</div>
+
+		<button class="btn btn-primary mt-3">Create Booking Request</button>
+		<div x-text="formMessage"></div>
+	</form>
+
+	<script>
+
+	 const FORM_URL = "/bookings/user";
+
+		function contactForm() {
+			console.log("Inside Contact Form");
+			//alert("Contact form");
+			return {
+				formData: {
+					
+				},
+				formMessage: "",
+				formLoading: false,
+				buttonText: "Submit",
+				submitForm() {
+					//alert("Submit form");
+					console.log("Inside Submit Form");
+					this.formData.userId = localStorage.getItem("userId");
+					this.formLoading = false;
+					this.buttonText = "Submitting...";
+					fetch(FORM_URL, {
+						method: "POST",
+						headers: {
+							"Content-Type": "application/json",
+							Accept: "application/json",
+						},
+						body: JSON.stringify(this.formData),
+					})
+						.then(() => {
+							
+							showAlert("Booking Request Successfully Created");
+						})
+						.catch(() => {
+							this.formMessage = "Something went wrong.";
+							//alert("Problem");
+						})
+						.finally(() => {
+							this.formLoading = false;
+							//alert("Finally");
+							this.buttonText = "Submit";
+						});
+				},
+			};
+		}
+		 function showAlert(message) {
+		        if(window.confirm(message)) {
+		        	window.location.href = 'user.html';
+		        }
+		    }
+	</script> 
+
+</body>
+</html>
