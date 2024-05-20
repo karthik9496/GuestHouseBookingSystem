@@ -41,7 +41,7 @@ public class BookingRequestController {
 
 	}
 	
-	//returns list of approved and rejected booking requests
+	//returns list of approved and rejected booking requests 1222222222
 	@GetMapping("/office/approved/{id}")
 	public List<OfficeBookingRequestDao> getInActiveBookingRequestsByOffice(@PathVariable int id) {
 
